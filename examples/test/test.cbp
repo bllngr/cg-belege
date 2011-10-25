@@ -46,6 +46,7 @@
 			<Add library="libgloostmath" />
 			<Add library="GLEW" />
 			<Add library="glut" />
+			<Add library="GL" />
 			<Add directory="../../contrib/gloostmath/bin" />
 			<Add directory="../../lib" />
 		</Linker>
