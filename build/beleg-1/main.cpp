@@ -47,6 +47,8 @@ void InitWindow(int, char*[]);
 void ResizeFunction(int, int);
 void IdleFunction(void);
 void TimerFunction(int);
+void KeyboardFunction(unsigned char, int, int);
+void MouseFunction(int, int, int, int);
 void Cleanup(void);
 void LoadModel(void);
 void SetupShader();
@@ -77,7 +79,7 @@ void Draw(void)
      int now = glutGet(GLUT_ELAPSED_TIME);
 
      // Rotation
-     // float rotation = now*0.001;
+     float rotation = now * 0.001;
 
 
      //////////////////////////////////////////////////////////////////////////
@@ -116,7 +118,112 @@ void Draw(void)
 
      }
 
-     //load last transformation from stack
+     //save the transformation for Mercure onto the MatrixStack
+     ModelViewMatrixStack.push();
+     {
+         // transformations for the first planet
+         // ModelViewMatrixStack.scale();
+         ModelViewMatrixStack.rotate(0, rotation, 0);
+         ModelViewMatrixStack.translate(0, 0, 1.0);
+
+          // transfer ModelViewMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+          //set the NormalMatrix for Geometry 1
+          normalMatrix = ModelViewMatrixStack.top();
+          normalMatrix.invert();
+          normalMatrix.transpose();
+
+          // transfer NormalMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+          //bind the Geometry
+          glBindVertexArray(BufferIds[0]);
+          // draw Geometry 1
+          glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+     }
+     ModelViewMatrixStack.pop();
+
+          //save the transformation for Mercure onto the MatrixStack
+     ModelViewMatrixStack.push();
+     {
+         // transformations for the first planet
+         ModelViewMatrixStack.rotate(0, rotation, 0);
+		ModelViewMatrixStack.scale(.9, .9, .9);
+         ModelViewMatrixStack.translate(0, 0, 1.0);
+
+          // transfer ModelViewMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+          //set the NormalMatrix for Geometry 1
+          normalMatrix = ModelViewMatrixStack.top();
+          normalMatrix.invert();
+          normalMatrix.transpose();
+
+          // transfer NormalMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+          //bind the Geometry
+          glBindVertexArray(BufferIds[0]);
+          // draw Geometry 1
+          glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+     }
+     ModelViewMatrixStack.pop();
+
+          //save the transformation for Mercure onto the MatrixStack
+     ModelViewMatrixStack.push();
+     {
+         // transformations for the first planet
+         ModelViewMatrixStack.rotate(0, rotation, 0);
+         ModelViewMatrixStack.scale(.8, .8, .8);
+         ModelViewMatrixStack.translate(0, 0, 2.0);
+
+          // transfer ModelViewMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+          //set the NormalMatrix for Geometry 1
+          normalMatrix = ModelViewMatrixStack.top();
+          normalMatrix.invert();
+          normalMatrix.transpose();
+
+          // transfer NormalMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+          //bind the Geometry
+          glBindVertexArray(BufferIds[0]);
+          // draw Geometry 1
+          glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+     }
+     ModelViewMatrixStack.pop();
+
+          //save the transformation for Mercure onto the MatrixStack
+     ModelViewMatrixStack.push();
+     {
+         // transformations for the first planet
+         ModelViewMatrixStack.rotate(0, rotation, 0);
+         ModelViewMatrixStack.scale(.7, .7, .7);
+         ModelViewMatrixStack.translate(0, 0, 3.0);
+
+          // transfer ModelViewMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+          //set the NormalMatrix for Geometry 1
+          normalMatrix = ModelViewMatrixStack.top();
+          normalMatrix.invert();
+          normalMatrix.transpose();
+
+          // transfer NormalMatrix for Geometry 1 to Shaders
+          glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+          //bind the Geometry
+          glBindVertexArray(BufferIds[0]);
+          // draw Geometry 1
+          glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+     }
      ModelViewMatrixStack.pop();
 
      glBindVertexArray(0);
@@ -296,6 +403,56 @@ void ResizeFunction(int Width, int Height)
      glUseProgram(0);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
+void KeyboardFunction(unsigned char Key, int X, int Y)
+{
+    std::cout << "[GLUT] pressed " << Key << " key." << std::endl;
+
+    gloost::Matrix cameraTransform;
+
+    switch (Key)
+    {
+    case 'W':
+    case 'w':
+        {
+            // cameraTransform.setIdentity();
+            cameraTransform.setTranslate(0.0, 0.0, 4.0);
+            // cameraTransform.invert();
+            break;
+        }
+    default:
+        break;
+    }
+
+    //reset the modelmatrix
+    ModelViewMatrixStack.clear();
+    ModelViewMatrixStack.loadMatrix(cameraTransform);
+
+}
+
+void MouseFunction(int Button, int State, int X, int Y)
+{
+    switch (Button)
+    {
+    case 3:
+    case 4: // It's a wheel event
+        {
+            // Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
+            if (State == GLUT_UP) return; // Disregard redundant GLUT_UP events
+
+            printf("Scroll %s At %d %d\n", (Button == 3) ? "Up" : "Down", X, Y);
+            break;
+        }
+    default:
+        {
+            printf("Button %s At %d %d\n", (State == GLUT_DOWN) ? "Down" : "Up", X, Y);
+            break;
+        }
+    }
+
+    return;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -333,6 +490,8 @@ void InitWindow(int argc, char* argv[])
      glutReshapeFunc(ResizeFunction);
      glutDisplayFunc(RenderFunction);
      glutIdleFunc(IdleFunction);
+     glutKeyboardFunc(KeyboardFunction);
+     glutMouseFunc(MouseFunction);
      glutCloseFunc(Cleanup);
 
 }
