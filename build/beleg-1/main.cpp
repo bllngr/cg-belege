@@ -4,6 +4,14 @@
 //////////  http://www.arcsynthesis.org/gltut/
 /////////////////////////////////////////////////////////////////////////
 
+/*
+ * Keyboard interaction:
+ * w, a, s, d  : translate camera
+ * SPACE       : pause
+ * r           : reset camera
+ * ESC, q      : quit
+ *
+ */
 
 #include <iostream>
 #include <GL/glew.h>
@@ -38,6 +46,7 @@ unsigned FrameCount = 0;
 unsigned ProjectionMatrixUniformLocation = 0;
 unsigned ModelViewMatrixUniformLocation  = 0;
 unsigned NormalMatrixUniformLocation     = 0;
+unsigned ObjectColorUniformLocation      = 0;
 
 unsigned BufferIds[6] = { 0u };
 unsigned ShaderIds[3] = { 0u };
@@ -103,7 +112,7 @@ void Draw(void)
 
     //////////////////////////////////////////////////////////////////////////
 
-  glUseProgram(ShaderIds[0]);
+    glUseProgram(ShaderIds[0]);
 
     // reset the modelmatrix
     ModelViewMatrixStack.clear();
@@ -118,9 +127,10 @@ void Draw(void)
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
-
         // transfer ModelViewMatrix for Geometry 1 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.9f, 0.0f, 1.0f);
 
         // set the NormalMatrix for Geometry 1
         normalMatrix = ModelViewMatrixStack.top();
@@ -136,16 +146,18 @@ void Draw(void)
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 
     }
+    ModelViewMatrixStack.pop();
 
     // save the current transformation onto the MatrixStack (mercure)
     ModelViewMatrixStack.push();
     {
-        // ModelViewMatrixStack.scale();
         ModelViewMatrixStack.rotate(0, rotation * 0.9, 0);
         ModelViewMatrixStack.translate(0, 0, 1.0);
 
         // transfer ModelViewMatrix for Geometry 2 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.44f, 1.0f, 1.0f);
 
         // set the NormalMatrix for Geometry 2
         normalMatrix = ModelViewMatrixStack.top();
@@ -173,6 +185,8 @@ void Draw(void)
         // transfer ModelViewMatrix for Geometry 3 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
+        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.3f, 0.0f, 1.0f);
+
         // set the NormalMatrix for Geometry 3
         normalMatrix = ModelViewMatrixStack.top();
         normalMatrix.invert();
@@ -199,6 +213,8 @@ void Draw(void)
         // transfer ModelViewMatrix for Geometry 4 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
+        glUniform4f(ObjectColorUniformLocation, 0.3f, 0.18f, 0.0f, 1.0f);
+
         // set the NormalMatrix for Geometry 4
         normalMatrix = ModelViewMatrixStack.top();
         normalMatrix.invert();
@@ -224,6 +240,8 @@ void Draw(void)
 
         // transfer ModelViewMatrix for Geometry 5 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.6f, 0.9f, 1.0f);
 
         // set the NormalMatrix for Geometry 5
         normalMatrix = ModelViewMatrixStack.top();
@@ -293,6 +311,7 @@ void SetupShader()
     ModelViewMatrixUniformLocation  = glGetUniformLocation(ShaderIds[0], "ModelViewMatrix");
     ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
     NormalMatrixUniformLocation     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
+    ObjectColorUniformLocation      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
 }
 
 
@@ -304,6 +323,7 @@ void LoadModel(void)
 
     // load a wavefront *.obj file
     gloost::ObjLoader loader("../data/objects/sphere.obj");
+
     mesh = loader.getMesh();
 
     // IMPORTANT: use this to increase the reference counter
