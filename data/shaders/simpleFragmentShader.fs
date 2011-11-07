@@ -1,13 +1,19 @@
 #version 330
 
-in  vec4 normal;
+in vec4 normal;
+in vec4 vector;
 
 out vec4 out_Color;
 
+uniform vec4 ObjectColor;
 
+float diffuse = 0.9f;
 
 void main(void)
 {
-	//in absence of any material, set everything just red
-	out_Color = normal; // vec4(1.0,0.0,0.0,1.0);
+
+    vec3 ray   = normalize( vec3(0.0f) - vector.xyz);
+    vec3 color = ObjectColor.xyz * diffuse * max(dot(normal.xyz, ray), 0.0f);
+
+	out_Color  = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
