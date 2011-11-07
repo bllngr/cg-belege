@@ -127,10 +127,14 @@ void Draw(void)
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
+        ModelViewMatrixStack.translate(.1, -.2, 0);
+        ModelViewMatrixStack.scale(2.0f);
+
         // transfer ModelViewMatrix for Geometry 1 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
-        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.9f, 0.0f, 1.0f);
+        // transfer object color vector for Geometry 1 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
 
         // set the NormalMatrix for Geometry 1
         normalMatrix = ModelViewMatrixStack.top();
@@ -148,16 +152,19 @@ void Draw(void)
     }
     ModelViewMatrixStack.pop();
 
-    // save the current transformation onto the MatrixStack (mercure)
+    // save the current transformation onto the MatrixStack (first planet)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.rotate(0, rotation * 0.9, 0);
-        ModelViewMatrixStack.translate(0, 0, 1.0);
+        ModelViewMatrixStack.scale(0.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 1.5, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
+
 
         // transfer ModelViewMatrix for Geometry 2 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
-        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.44f, 1.0f, 1.0f);
+        // transfer object color vector for Geometry 2 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.18f, 0.25f, 1.0f); // light blue
 
         // set the NormalMatrix for Geometry 2
         normalMatrix = ModelViewMatrixStack.top();
@@ -173,19 +180,20 @@ void Draw(void)
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 
     }
-    ModelViewMatrixStack.pop(); // mercure
+    ModelViewMatrixStack.pop(); // first planet
 
-    // save the current transformation onto the MatrixStack (venus)
+    // save the current transformation onto the MatrixStack (second planet)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.rotate(0, rotation * 0.4, 0);
-        // ModelViewMatrixStack.scale(.9, .9, .9);
-        ModelViewMatrixStack.translate(0, 0, 2.0);
+        ModelViewMatrixStack.scale(0.4f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.25f, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 6.0f);
 
         // transfer ModelViewMatrix for Geometry 3 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
-        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.3f, 0.0f, 1.0f);
+        // transfer object color vector for Geometry 3 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.4f, 0.2f, 0.0f, 1.0f); // orange
 
         // set the NormalMatrix for Geometry 3
         normalMatrix = ModelViewMatrixStack.top();
@@ -201,19 +209,20 @@ void Draw(void)
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 
     }
-    ModelViewMatrixStack.pop(); // venus
+    // don't pop it, since we want it to have a moon
 
-    // save the current transformation onto the MatrixStack (earth)
+    // save the current transformation onto the MatrixStack (second planet's moon)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.rotate(0, rotation * 1.2, 0);
-        // ModelViewMatrixStack.scale(.8, .8, .8);
-        ModelViewMatrixStack.translate(0, 0, 3.0);
+        ModelViewMatrixStack.scale(0.25f);
+        ModelViewMatrixStack.rotate(rotation * 1.2f, 0.0f, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 3.0f);
 
         // transfer ModelViewMatrix for Geometry 4 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
-        glUniform4f(ObjectColorUniformLocation, 0.3f, 0.18f, 0.0f, 1.0f);
+        // transfer object color vector for Geometry 4 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
 
         // set the NormalMatrix for Geometry 4
         normalMatrix = ModelViewMatrixStack.top();
@@ -229,19 +238,21 @@ void Draw(void)
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 
     }
-    ModelViewMatrixStack.pop(); // earth
+    ModelViewMatrixStack.pop(); // the moon
+    ModelViewMatrixStack.pop(); // and the second planet
 
-    // save the current transformation onto the MatrixStack (mars)
+    // save the current transformation onto the MatrixStack (third planet)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.rotate(0, rotation, 0);
-        // ModelViewMatrixStack.scale(.7, .7, .7);
-        ModelViewMatrixStack.translate(0, 0, 4.0);
+        ModelViewMatrixStack.scale(.65f);
+        ModelViewMatrixStack.rotate(0.0f, rotation, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 5.0f);
 
         // transfer ModelViewMatrix for Geometry 5 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
-        glUniform4f(ObjectColorUniformLocation, 1.0f, 0.6f, 0.9f, 1.0f);
+        // transfer object color vector for Geometry 5 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.5f, 0.3f, 0.0f, 1.0f); // brownish
 
         // set the NormalMatrix for Geometry 5
         normalMatrix = ModelViewMatrixStack.top();
@@ -257,7 +268,154 @@ void Draw(void)
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 
     }
-    ModelViewMatrixStack.pop(); // mars
+    ModelViewMatrixStack.pop(); // third planet
+
+    // save the current transformation onto the MatrixStack (fourth planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.75f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.8f + 1, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 6.0f);
+
+        // transfer ModelViewMatrix for Geometry 6 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        // transfer object color vector for Geometry 6 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.13f, 0.6f, 0.36f, 1.0f); // turquoise
+
+        // set the NormalMatrix for Geometry 6
+        normalMatrix = ModelViewMatrixStack.top();
+        normalMatrix.invert();
+        normalMatrix.transpose();
+
+        // transfer NormalMatrix for Geometry 6 to Shaders
+        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[0]);
+        // draw Geometry 6
+        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+    }
+    ModelViewMatrixStack.pop(); // fourth planet
+
+    // save the current transformation onto the MatrixStack (fifth planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 2, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 22.0f);
+
+        // transfer ModelViewMatrix for Geometry 7 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        // transfer object color vector for Geometry 7 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.0f, 0.5f, 1.0f); // glarish blue
+        // set the NormalMatrix for Geometry 7
+        normalMatrix = ModelViewMatrixStack.top();
+        normalMatrix.invert();
+        normalMatrix.transpose();
+
+        // transfer NormalMatrix for Geometry 7 to Shaders
+        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[0]);
+        // draw Geometry 7
+        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+    }
+    ModelViewMatrixStack.pop(); // fifth planet
+
+    // save the current transformation onto the MatrixStack (sixths and last planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.45f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.33 - 4, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 15.0f);
+
+        // transfer ModelViewMatrix for Geometry 8 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        // transfer object color vector for Geometry 7 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.5f, 0.33f, 0.5f, 1.0f); // bubble-gum pink
+
+        // set the NormalMatrix for Geometry 8
+        normalMatrix = ModelViewMatrixStack.top();
+        normalMatrix.invert();
+        normalMatrix.transpose();
+
+        // transfer NormalMatrix for Geometry 8 to Shaders
+        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[0]);
+        // draw Geometry 7
+        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+    }
+
+    // two moons
+
+    // save the current transformation onto the MatrixStack (last planet's first moon)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 1.75, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 2.55f);
+
+        // transfer ModelViewMatrix for Geometry 8 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        // transfer object color vector for Geometry 8 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
+
+        // set the NormalMatrix for Geometry 8
+        normalMatrix = ModelViewMatrixStack.top();
+        normalMatrix.invert();
+        normalMatrix.transpose();
+
+        // transfer NormalMatrix for Geometry 8 to Shaders
+        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[0]);
+        // draw Geometry 7
+        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+    }
+    ModelViewMatrixStack.pop(); // last planet's first moon
+
+    // save the current transformation onto the MatrixStack (last planet's second moon)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(rotation * 1.75, 0.0f, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 3.5f);
+
+        // transfer ModelViewMatrix for Geometry 9 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+        // transfer object color vector for Geometry 9 to Shaders
+        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
+
+        // set the NormalMatrix for Geometry 9
+        normalMatrix = ModelViewMatrixStack.top();
+        normalMatrix.invert();
+        normalMatrix.transpose();
+
+        // transfer NormalMatrix for Geometry 9 to Shaders
+        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[0]);
+        // draw Geometry 7
+        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+
+    }
+    ModelViewMatrixStack.pop(); // last planet's second moon
+
+    ModelViewMatrixStack.pop(); // last planet
     ModelViewMatrixStack.pop(); // sun
 
     glUseProgram(0);
