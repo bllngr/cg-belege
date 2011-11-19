@@ -28,9 +28,6 @@ gloost::Mesh* mesh = 0;
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
 
-
-
-
 int CurrentWidth  = 800;
 int CurrentHeight = 600;
 int WindowHandle  = 0;
@@ -48,9 +45,11 @@ unsigned ProjectionMatrixUniformLocation = 0;
 unsigned ModelViewMatrixUniformLocation  = 0;
 unsigned NormalMatrixUniformLocation     = 0;
 unsigned ObjectColorUniformLocation      = 0;
+unsigned SamplerUniformLocation          = 0;
 
-unsigned BufferIds[6] = { 0u };
-unsigned ShaderIds[3] = { 0u };
+unsigned BufferIds[6]  = { 0u };
+unsigned ShaderIds[3]  = { 0u };
+unsigned TextureId     = 0;
 
 float rotationOffset = 0.0f;
 
@@ -134,8 +133,13 @@ void Draw(void)
         // transfer ModelViewMatrix for Geometry 1 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
+        // bind Texture and transfer to shader
+        glActiveTexture(GL_TEXTURE0 + 0);
+        glBindTexture(GL_TEXTURE_2D, TextureId);
+        glUniform1i(SamplerUniformLocation, GL_TEXTURE0 + 0);
+
         // transfer object color vector for Geometry 1 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
+        // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
 
         // set the NormalMatrix for Geometry 1
         normalMatrix = ModelViewMatrixStack.top();
@@ -471,6 +475,7 @@ void SetupShader()
     ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
     NormalMatrixUniformLocation     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
     ObjectColorUniformLocation      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
+    SamplerUniformLocation          = glGetUniformLocation(ShaderIds[0], "ObjectSampler");
 }
 
 
@@ -479,9 +484,8 @@ void SetupShader()
 
 void LoadModel(void)
 {
-
     // load a wavefront *.obj file
-    gloost::ObjLoader loader("../data/objects/sphere.obj");
+    gloost::ObjLoader loader("../data/objects/sphere_new.obj");
 
     mesh = loader.getMesh();
 
@@ -524,21 +528,36 @@ void LoadModel(void)
     // specifies where in the GL_ARRAY_BUFFER our data(the vertex position) is exactly
     glVertexAttribPointer(0,
                           GLOOST_MESH_NUM_COMPONENTS_VERTEX,
-                          GL_FLOAT, GL_FALSE,
+                          GL_FLOAT,
+                          GL_FALSE,
                           mesh->getInterleavedInfo().interleavedPackageStride,// mesh->getInterleavedInfo().interleavedVertexStride,
                           (GLvoid*)(mesh->getInterleavedInfo().interleavedVertexStride));
 
     // enables a VertexAttributeArray
     glEnableVertexAttribArray(1);
 
-    // specifies where in the GL_ARRAY_BUFFER our data(the vertex position) is exactly
+    // specifies where in the GL_ARRAY_BUFFER our data(the normal vectors) is exactly
     glVertexAttribPointer(1,
                           GLOOST_MESH_NUM_COMPONENTS_NORMAL,
-                          GL_FLOAT, GL_FALSE,
+                          GL_FLOAT,
+                          GL_FALSE,
                           mesh->getInterleavedInfo().interleavedPackageStride,
                           (GLvoid*)(mesh->getInterleavedInfo().interleavedNormalStride));
 
-    // the seceond VertexBufferObject ist bound
+    // glBindBuffer(GL_TEXTURE_COORD_ARRAY, BufferIds[1]); // TODO
+
+    // enables a VertexAttributeArray
+    glEnableVertexAttribArray(2);
+
+    // specifies where in the GL_TEXTURE_COORD_ARRAY our data(the texture coordinates) is exactly
+    glVertexAttribPointer(2, // TODO
+                          GLOOST_MESH_NUM_COMPONENTS_TEXCOORD,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          mesh->getInterleavedInfo().interleavedPackageStride,
+                          (GLvoid*)(mesh->getInterleavedInfo().interleavedTexcoordStride));
+
+    // the second VertexBufferObject ist bound
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
 
     // its data are the indices of the vertices
@@ -549,6 +568,47 @@ void LoadModel(void)
 
     // unbind the VertexArray - Scope ends
     glBindVertexArray(0);
+}
+
+bool CreateTexture(std::string const& filename)
+{
+    FIBITMAP *bitmap    = FreeImage_Load(FreeImage_GetFileType(filename.c_str()), filename.c_str());
+    unsigned char *data = FreeImage_GetBits(bitmap);
+
+    // generate texture id
+    glGenTextures(1, &TextureId);
+
+    if (0 == TextureId) {
+        // OpenGL was not able to generate additional texture
+        return false;
+    }
+
+    // ??
+    glEnable(GL_TEXTURE_2D);
+
+    // bind texture object
+    glBindTexture(GL_TEXTURE_2D, TextureId);
+
+    // load image data
+    glTexImage2D(
+        GL_TEXTURE_2D, // target
+        0,      // level of detail
+        GL_RGB, // internal format
+        FreeImage_GetWidth(bitmap),
+        FreeImage_GetHeight(bitmap),
+        0,      // border width
+        GL_BGR, // format of the pixel data, FreeImage returns BGR values
+        GL_UNSIGNED_BYTE, // data type of the pixel data; unsigned char == unsigned byte
+        data    // FreeImage_GetBits();
+    );
+
+    // setting Texture Parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    return true;
 }
 
 
@@ -565,6 +625,8 @@ void Cleanup(void)
 
     glDeleteBuffers(2, &BufferIds[1]);
     glDeleteVertexArrays(1, &BufferIds[0]);
+
+    FreeImage_DeInitialise(); // not needed if linked dynamically
 }
 
 
@@ -785,5 +847,10 @@ void Initialize(int argc, char* argv[])
     ProjectionMatrix.setIdentity();
 
     SetupShader();
+
+    FreeImage_Initialise();
+
     LoadModel();
+    // CreateTexture("../data/textures/Planet_Texture_02_by_Qzma.jpg");
+    CreateTexture("../data/textures/gradient.png");
 }
