@@ -49,7 +49,7 @@ unsigned SamplerUniformLocation          = 0;
 
 unsigned BufferIds[6]  = { 0u };
 unsigned ShaderIds[3]  = { 0u };
-unsigned TextureId     = 0;
+unsigned TextureIds[6] = { 0u };
 
 float rotationOffset = 0.0f;
 
@@ -134,9 +134,9 @@ void Draw(void)
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
         // bind Texture and transfer to shader
-        glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(GL_TEXTURE_2D, TextureId);
-        glUniform1i(SamplerUniformLocation, GL_TEXTURE0 + 0);
+        // glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureIds[0]);
+        glUniform1i(SamplerUniformLocation, GL_TEXTURE0);
 
         // transfer object color vector for Geometry 1 to Shaders
         // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
@@ -168,8 +168,13 @@ void Draw(void)
         // transfer ModelViewMatrix for Geometry 2 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
+        // bind Texture and transfer to shader
+        // glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, TextureIds[1]);
+        glUniform1i(SamplerUniformLocation, GL_TEXTURE1);
+
         // transfer object color vector for Geometry 2 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.18f, 0.25f, 1.0f); // light blue
+        // glUniform4f(ObjectColorUniformLocation, 0.0f, 0.18f, 0.25f, 1.0f); // light blue
 
         // set the NormalMatrix for Geometry 2
         normalMatrix = ModelViewMatrixStack.top();
@@ -372,8 +377,13 @@ void Draw(void)
         // transfer ModelViewMatrix for Geometry 8 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
+        // bind Texture and transfer to shader
+        // glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, TextureIds[2]);
+        glUniform1i(SamplerUniformLocation, GL_TEXTURE1);
+
         // transfer object color vector for Geometry 8 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
+        // glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
 
         // set the NormalMatrix for Geometry 8
         normalMatrix = ModelViewMatrixStack.top();
@@ -485,7 +495,7 @@ void SetupShader()
 void LoadModel(void)
 {
     // load a wavefront *.obj file
-    gloost::ObjLoader loader("../data/objects/sphere_new.obj");
+    gloost::ObjLoader loader("../data/objects/sphere_mod.obj");
 
     mesh = loader.getMesh();
 
@@ -570,15 +580,15 @@ void LoadModel(void)
     glBindVertexArray(0);
 }
 
-bool CreateTexture(std::string const& filename)
+bool CreateTexture(unsigned textureIdIndex, std::string const& filename)
 {
     FIBITMAP *bitmap    = FreeImage_Load(FreeImage_GetFileType(filename.c_str()), filename.c_str());
     unsigned char *data = FreeImage_GetBits(bitmap);
 
     // generate texture id
-    glGenTextures(1, &TextureId);
+    glGenTextures(1, &TextureIds[textureIdIndex]);
 
-    if (0 == TextureId) {
+    if (0 == TextureIds[textureIdIndex]) {
         // OpenGL was not able to generate additional texture
         return false;
     }
@@ -587,7 +597,7 @@ bool CreateTexture(std::string const& filename)
     glEnable(GL_TEXTURE_2D);
 
     // bind texture object
-    glBindTexture(GL_TEXTURE_2D, TextureId);
+    glBindTexture(GL_TEXTURE_2D, TextureIds[textureIdIndex]);
 
     // load image data
     glTexImage2D(
@@ -605,8 +615,8 @@ bool CreateTexture(std::string const& filename)
     // setting Texture Parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
     return true;
 }
@@ -851,6 +861,8 @@ void Initialize(int argc, char* argv[])
     FreeImage_Initialise();
 
     LoadModel();
-    // CreateTexture("../data/textures/Planet_Texture_02_by_Qzma.jpg");
-    CreateTexture("../data/textures/gradient.png");
+
+    CreateTexture(0, "../data/textures/SunTexture_2048.png");
+    CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.jpg");
+    CreateTexture(2, "../data/textures/moon_texture.jpg");
 }
