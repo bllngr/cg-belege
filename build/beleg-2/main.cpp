@@ -471,8 +471,8 @@ void SetupShader()
     ShaderIds[0] = glCreateProgram();
     {
         // takes a (shader) filename and a shader-type and returns and id of the compiled shader
-        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleVertexShader.vs", GL_VERTEX_SHADER);
-        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleFragmentShader.fs", GL_FRAGMENT_SHADER);
+        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleVertexShader.vert", GL_VERTEX_SHADER);
+        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleFragmentShader.frag", GL_FRAGMENT_SHADER);
 
         // attaches a shader to a program
         glAttachShader(ShaderIds[0], ShaderIds[1]);
