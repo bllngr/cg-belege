@@ -75,9 +75,10 @@ void MouseFunction(int, int, int, int);
 void MotionFunction(int, int);
 void MoveCamera(CameraManipulation, float, float, float);
 void Cleanup(void);
-void LoadModel(void);
+void LoadModel(std::string const&);
 void SetupShader();
 void Draw(void);
+void DrawOrb(int);
 void RenderFunction(void);
 
 
@@ -122,37 +123,13 @@ void Draw(void)
     ModelViewMatrixStack.rotate(cameraRotation);
     ModelViewMatrixStack.top().invert();
 
-    gloost::Matrix normalMatrix;
-
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.translate(.1, -.2, 0);
+        // ModelViewMatrixStack.translate(1.0f, -2.0f, -8.0f);
         ModelViewMatrixStack.scale(2.0f);
 
-        // transfer ModelViewMatrix for Geometry 1 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // bind Texture and transfer to shader
-        // glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, TextureIds[0]);
-        glUniform1i(SamplerUniformLocation, GL_TEXTURE0);
-
-        // transfer object color vector for Geometry 1 to Shaders
-        // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
-
-        // set the NormalMatrix for Geometry 1
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 1 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 1
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(0);
 
     }
     ModelViewMatrixStack.pop();
@@ -165,30 +142,7 @@ void Draw(void)
         ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
 
 
-        // transfer ModelViewMatrix for Geometry 2 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // bind Texture and transfer to shader
-        // glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, TextureIds[1]);
-        glUniform1i(SamplerUniformLocation, GL_TEXTURE1);
-
-        // transfer object color vector for Geometry 2 to Shaders
-        // glUniform4f(ObjectColorUniformLocation, 0.0f, 0.18f, 0.25f, 1.0f); // light blue
-
-        // set the NormalMatrix for Geometry 2
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 2 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 2
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
-
+        DrawOrb(1);
     }
     ModelViewMatrixStack.pop(); // first planet
 
@@ -199,24 +153,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 0.25f, 0.0f);
         ModelViewMatrixStack.translate(0.0f, 0.0f, 6.0f);
 
-        // transfer ModelViewMatrix for Geometry 3 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 3 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.4f, 0.2f, 0.0f, 1.0f); // orange
-
-        // set the NormalMatrix for Geometry 3
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 3 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 3
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     // don't pop it, since we want it to have a moon
@@ -228,24 +165,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(rotation * 1.2f, 0.0f, 0.0f);
         ModelViewMatrixStack.translate(0.0f, 0.0f, 3.0f);
 
-        // transfer ModelViewMatrix for Geometry 4 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 4 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
-
-        // set the NormalMatrix for Geometry 4
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 4 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 4
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // the moon
@@ -258,24 +178,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 5.0f);
 
-        // transfer ModelViewMatrix for Geometry 5 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 5 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.5f, 0.3f, 0.0f, 1.0f); // brownish
-
-        // set the NormalMatrix for Geometry 5
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 5 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 5
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // third planet
@@ -287,24 +190,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 0.8f + 1, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 6.0f);
 
-        // transfer ModelViewMatrix for Geometry 6 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 6 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.13f, 0.6f, 0.36f, 1.0f); // turquoise
-
-        // set the NormalMatrix for Geometry 6
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 6 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 6
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // fourth planet
@@ -316,23 +202,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 2, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 22.0f);
 
-        // transfer ModelViewMatrix for Geometry 7 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 7 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.0f, 0.0f, 0.5f, 1.0f); // glarish blue
-        // set the NormalMatrix for Geometry 7
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 7 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 7
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // fifth planet
@@ -344,24 +214,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 0.33 - 4, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 15.0f);
 
-        // transfer ModelViewMatrix for Geometry 8 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 7 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.5f, 0.33f, 0.5f, 1.0f); // bubble-gum pink
-
-        // set the NormalMatrix for Geometry 8
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 8 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 7
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
 
@@ -374,29 +227,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 1.75, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 2.55f);
 
-        // transfer ModelViewMatrix for Geometry 8 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // bind Texture and transfer to shader
-        // glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, TextureIds[2]);
-        glUniform1i(SamplerUniformLocation, GL_TEXTURE1);
-
-        // transfer object color vector for Geometry 8 to Shaders
-        // glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
-
-        // set the NormalMatrix for Geometry 8
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 8 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 7
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // last planet's first moon
@@ -408,24 +239,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(rotation * 1.75, 0.0f, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 3.5f);
 
-        // transfer ModelViewMatrix for Geometry 9 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // transfer object color vector for Geometry 9 to Shaders
-        glUniform4f(ObjectColorUniformLocation, 0.1f, 0.1f, 0.1f, 1.0f); // white
-
-        // set the NormalMatrix for Geometry 9
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix for Geometry 9 to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-        // draw Geometry 7
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+        DrawOrb(1);
 
     }
     ModelViewMatrixStack.pop(); // last planet's second moon
@@ -436,6 +250,36 @@ void Draw(void)
     glUseProgram(0);
 }
 
+
+void DrawOrb(int TextureId)
+{
+    gloost::Matrix normalMatrix;
+
+    // transfer ModelViewMatrix to Shaders
+    glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+    // bind Texture and transfer to shader
+    // glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, TextureIds[TextureId]);
+    glUniform1i(SamplerUniformLocation, GL_TEXTURE0 + TextureId);
+
+    // transfer object color vector to Shaders
+    // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
+
+    // set the NormalMatrix
+    normalMatrix = ModelViewMatrixStack.top();
+    normalMatrix.invert();
+    normalMatrix.transpose();
+
+    // transfer NormalMatrix for to Shaders
+    glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+    // bind the Geometry
+    glBindVertexArray(BufferIds[0]);
+
+    // draw Geometry 1
+    glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void TimerFunction(int value)
@@ -471,8 +315,8 @@ void SetupShader()
     ShaderIds[0] = glCreateProgram();
     {
         // takes a (shader) filename and a shader-type and returns and id of the compiled shader
-        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleVertexShader.vs", GL_VERTEX_SHADER);
-        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleFragmentShader.fs", GL_FRAGMENT_SHADER);
+        ShaderIds[1] = Shader::loadShader("../data/shaders/blinPhongShading.vert", GL_VERTEX_SHADER);
+        ShaderIds[2] = Shader::loadShader("../data/shaders/blinPhongShading.frag", GL_FRAGMENT_SHADER);
 
         // attaches a shader to a program
         glAttachShader(ShaderIds[0], ShaderIds[1]);
@@ -492,10 +336,10 @@ void SetupShader()
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
-void LoadModel(void)
+void LoadModel(std::string const& objFile)
 {
     // load a wavefront *.obj file
-    gloost::ObjLoader loader("../data/objects/sphere_mod.obj");
+    gloost::ObjLoader loader(objFile);
 
     mesh = loader.getMesh();
 
@@ -860,9 +704,9 @@ void Initialize(int argc, char* argv[])
 
     FreeImage_Initialise();
 
-    LoadModel();
+    LoadModel("../data/objects/sphere_malik.obj");
 
     CreateTexture(0, "../data/textures/SunTexture_2048.png");
-    CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.jpg");
-    CreateTexture(2, "../data/textures/moon_texture.jpg");
+    // CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.jpg");
+    CreateTexture(1, "../data/textures/moon_texture.png");
 }
