@@ -315,8 +315,8 @@ void SetupShader()
     ShaderIds[0] = glCreateProgram();
     {
         // takes a (shader) filename and a shader-type and returns and id of the compiled shader
-        ShaderIds[1] = Shader::loadShader("../data/shaders/blinPhongShading.vert", GL_VERTEX_SHADER);
-        ShaderIds[2] = Shader::loadShader("../data/shaders/blinPhongShading.frag", GL_FRAGMENT_SHADER);
+        ShaderIds[1] = Shader::loadShader("../data/shaders/blinnPhongShading.vert", GL_VERTEX_SHADER);
+        ShaderIds[2] = Shader::loadShader("../data/shaders/blinnPhongShading.frag", GL_FRAGMENT_SHADER);
 
         // attaches a shader to a program
         glAttachShader(ShaderIds[0], ShaderIds[1]);
