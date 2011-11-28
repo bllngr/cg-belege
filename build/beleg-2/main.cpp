@@ -41,8 +41,8 @@ gloost::Vector3 cameraRotation(0.0f, 0.0f, 0.0f);
 
 unsigned FrameCount = 0;
 
-unsigned ProjectionMatrixUniformLocation = 0;
 unsigned ModelViewMatrixUniformLocation  = 0;
+unsigned ProjectionMatrixUniformLocation = 0;
 unsigned NormalMatrixUniformLocation     = 0;
 unsigned ObjectColorUniformLocation      = 0;
 unsigned SamplerUniformLocation          = 0;
@@ -110,7 +110,6 @@ void Draw(void)
 
     timeBefore = timeNow;
 
-
     //////////////////////////////////////////////////////////////////////////
 
     glUseProgram(ShaderIds[0]);
@@ -121,6 +120,7 @@ void Draw(void)
 
     ModelViewMatrixStack.translate(cameraTranslation);
     ModelViewMatrixStack.rotate(cameraRotation);
+
     ModelViewMatrixStack.top().invert();
 
     // save the current transformation onto the MatrixStack (sun)
