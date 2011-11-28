@@ -15,26 +15,24 @@ uniform mat4 ModelViewMatrix;
 uniform mat4 ProjectionMatrix;
 uniform mat4 NormalMatrix;
 
-vec4 lightSource = ModelViewMatrix * vec4(0.0f, 0.0f, 0.0f, 1.0f);
+// light source is the sun, which is at the origin
+// TODO: find out why it has to be in world coordinates
+vec4 lightSource = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 void main(void)
 {
-    //^= old ModelViewProjectionMatrix
-
-    // vertex position in eye coordinates (?)
+    // vertex position to eye coordinates
     v = ModelViewMatrix * vec4(in_Position, 1.0);
 
-    // surface normal in eye coordinates
+    // surface normal to eye coordinates
     N = normalize(NormalMatrix * vec4(in_Normal, 0.0));
 
     // vector to light source
-    // TODO: why the hell has this to have the wrong direction?
     L = normalize(lightSource - v);
-
-    // transform the geometry
-    gl_Position = ProjectionMatrix * v;
-    // = ProjectionMatrix * ModelViewMatrix * vec4(in_Position, 1.0);
 
     // hand over the texture coordinates
     texCoords = in_TexCoords;
+
+    // transform the geometry
+    gl_Position = ProjectionMatrix * ModelViewMatrix * vec4(in_Position, 1.0);
 }

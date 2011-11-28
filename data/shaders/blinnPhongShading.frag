@@ -9,30 +9,29 @@ out vec4 out_Color;
 
 uniform sampler2D ObjectSampler;
 
-vec4 lightColor = vec4(1.0f, 1.0f, 1.0f, 1.0f); // usage: vec4(ambient, diffuse, specular, alpha);
-
-vec4 ambientColor  = vec4(vec3(0.25f), 1.0f);
-vec4 diffuseColor  = vec4(vec3(1.0f), 1.0f);
-vec4 specularColor = vec4(1.0f);
+vec4 lightColor            = vec4(1.0f,  1.0f, 1.0f, 1.0f); // totally white
+vec3 reflectionCoefficient = vec3(0.02f, 1.0f, 1.0f);       // ambient, diffuse, specular
 
 void main(void)
 {
-    vec4 eye              = normalize(-v);
-    vec4 reflectionVector = normalize(reflect(normalize(-L), normalize(N)));
+    vec4 reflectionVector = normalize(reflect(-normalize(L), normalize(N)));
 
     // diffuse shading
-    float diffuseTerm = max(0, dot(normalize(N), normalize(L)));
+    float diffuseTerm = max(0.0f, dot(normalize(N), normalize(L)));
 
     // specular shading
-    float spec = max(0.0f, dot(normalize(eye), reflectionVector));
+    // hier ist ein Widerspruch zwischen den Folien und der OpenGL Super Bible
+    // die Folien sagen dot(normalize(v), reflectionVector)
+    // die Bible sagt   dot(normalize(N), reflectionVector)
+    float spec = max(0.0f, dot(normalize(v), reflectionVector));
     float specularTerm = pow(spec, 128.0f);
 
     // texture color
-    vec4 textureColor = /* vec4(1.0f, 0.0f, 0.0f, 1.0f); // */ texture2D(ObjectSampler, texCoords);
+    vec4 textureColor = texture2D(ObjectSampler, texCoords);
 
     out_Color = (
-//                        lightColor.x * ambientColor
-                     + lightColor.y * diffuseTerm  * diffuseColor
-//                     + lightColor.z * specularTerm * specularColor
+                       lightColor.x * reflectionCoefficient.x
+                     + lightColor.y * reflectionCoefficient.y * diffuseTerm
+                     + lightColor.z * reflectionCoefficient.z * specularTerm
                 ) * textureColor;
 }
