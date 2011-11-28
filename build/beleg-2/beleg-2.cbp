@@ -53,10 +53,8 @@
 			<Add directory="../../lib" />
 		</Linker>
 		<Unit filename="main.cpp" />
-		<Unit filename="../../data/shaders/blinPhongShading.frag" />
-		<Unit filename="../../data/shaders/blinPhongShading.vert" />
-		<Unit filename="../../include/Scene.h" />
-		<Unit filename="../../src/Scene.cpp" />
+		<Unit filename="../../data/shaders/blinnPhongShading.frag" />
+		<Unit filename="../../data/shaders/blinnPhongShading.vert" />
 		<Unit filename="../../src/Shader.cpp" />
 		<Unit filename="../../src/Shader.h" />
 		<Extensions>
