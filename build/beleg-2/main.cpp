@@ -49,7 +49,7 @@ unsigned SamplerUniformLocation          = 0;
 
 unsigned BufferIds[6]  = { 0u };
 unsigned ShaderIds[3]  = { 0u };
-unsigned TextureIds[6] = { 0u };
+unsigned TextureIds[9] = { 0u };
 
 float rotationOffset = 0.0f;
 
@@ -142,7 +142,7 @@ void Draw(void)
         ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
 
 
-        DrawOrb(1);
+        DrawOrb(2);
     }
     ModelViewMatrixStack.pop(); // first planet
 
@@ -165,7 +165,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(rotation * 1.2f, 0.0f, 0.0f);
         ModelViewMatrixStack.translate(0.0f, 0.0f, 3.0f);
 
-        DrawOrb(1);
+        DrawOrb(7);
 
     }
     ModelViewMatrixStack.pop(); // the moon
@@ -178,7 +178,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 5.0f);
 
-        DrawOrb(1);
+        DrawOrb(4);
 
     }
     ModelViewMatrixStack.pop(); // third planet
@@ -190,7 +190,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 0.8f + 1, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 6.0f);
 
-        DrawOrb(1);
+        DrawOrb(3);
 
     }
     ModelViewMatrixStack.pop(); // fourth planet
@@ -202,7 +202,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 2, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 22.0f);
 
-        DrawOrb(1);
+        DrawOrb(5);
 
     }
     ModelViewMatrixStack.pop(); // fifth planet
@@ -214,7 +214,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 0.33 - 4, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 15.0f);
 
-        DrawOrb(1);
+        DrawOrb(6);
 
     }
 
@@ -227,7 +227,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 1.75, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 2.55f);
 
-        DrawOrb(1);
+        DrawOrb(7);
 
     }
     ModelViewMatrixStack.pop(); // last planet's first moon
@@ -239,7 +239,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(rotation * 1.75, 0.0f, 0.0f);
         ModelViewMatrixStack.translate(0.0, 0.0, 3.5f);
 
-        DrawOrb(1);
+        DrawOrb(7);
 
     }
     ModelViewMatrixStack.pop(); // last planet's second moon
@@ -707,6 +707,11 @@ void Initialize(int argc, char* argv[])
     LoadModel("../data/objects/sphere_malik.obj");
 
     CreateTexture(0, "../data/textures/SunTexture_2048.png");
-    // CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.jpg");
-    CreateTexture(1, "../data/textures/moon_texture.png");
+    CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.png");
+    CreateTexture(2, "../data/textures/Planet_Texture_2_by_SkillZombie.png");
+    CreateTexture(3, "../data/textures/Planet_Texture_02_by_Qzma.png");
+    CreateTexture(4, "../data/textures/SAN_2007___Mars_texture_002_by_Ayelie_stock.png");
+    CreateTexture(5, "../data/textures/neptune_texture_by_planetaryvisions.com.png");
+    CreateTexture(6, "../data/textures/mercure_texture_by_kilianhett.u.png");
+    CreateTexture(7, "../data/textures/moon_texture.png");
 }
