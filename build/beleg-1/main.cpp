@@ -20,7 +20,7 @@
 #include <gloostGlUtil.h>
 #include <Shader.h>
 
-// include gloost::Mesh wich is a geometry container
+// include gloost::Mesh which is a geometry container
 #include <Mesh.h>
 gloost::Mesh* mesh = 0;
 
