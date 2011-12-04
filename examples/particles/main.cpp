@@ -22,8 +22,8 @@
 
 // include gloost::Mesh which is a geometry container
 #include <Mesh.h>
-gloost::Mesh* mesh      = 0;
-std::vector< float > *particles = 0;
+gloost::Mesh* mesh = 0;
+auto *particles    = new std::vector< gloost::Point3 >();
 
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
@@ -288,19 +288,13 @@ void LoadModel(void)
 
 void PrepareParticles()
 {
-    particles = new std::vector< float >();
+    particles = new std::vector< gloost::Point3 >();
 
-    particles->push_back(0.0f); // x
-    particles->push_back(1.0f); // y
-    particles->push_back(0.0f);  // z
+    particles->push_back(gloost::Point3( 0.0f, 1.0f, 0.0f));
+    particles->push_back(gloost::Point3( 1.0f, 0.0f, 0.0f));
+    particles->push_back(gloost::Point3(-1.0f, 0.0f, 0.0f));
 
-    particles->push_back(1.0f);  // x
-    particles->push_back(0.0f); // y
-    particles->push_back(0.0f);  // z
-
-    particles->push_back(-1.0f);  // z
-    particles->push_back(0.0f);  // y
-    particles->push_back(0.0f);  // z
+    std::cout << sizeof(gloost::Point3) << "; " << 4 * sizeof(float) << std::endl;
 
     // unsigned index[] = {0, 1, 2}; // only needed for glDrawElements
 
@@ -318,7 +312,7 @@ void PrepareParticles()
     // set the vertex data for the actual buffer; the second parameter is the size in bytes of all Vertices together
     // the third parameter is a pointer to the vertexdata
     glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(float) * particles->size(),
+                 sizeof(gloost::Point3) * particles->size(),
                  &((*particles)[0]),
                  GL_STATIC_DRAW);
 
@@ -327,7 +321,7 @@ void PrepareParticles()
 
     // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
     glVertexAttribPointer(0,
-                          3,
+                          4,
                           GL_FLOAT,
                           GL_FALSE,
                           0,
