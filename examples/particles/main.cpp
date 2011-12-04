@@ -19,16 +19,18 @@
 #include <gloostMath.h>
 #include <gloostGlUtil.h>
 #include <Shader.h>
+#include <Particles.h>
 
 // include gloost::Mesh which is a geometry container
 #include <Mesh.h>
 gloost::Mesh* mesh = 0;
-auto *particles    = new std::vector< gloost::Point3 >();
+
+Particles particles;
 
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
 
-
+#include <Particles.h>
 
 
 int CurrentWidth  = 800;
@@ -79,7 +81,6 @@ void Cleanup(void);
 void LoadModel(void);
 void SetupShader();
 void Draw(void);
-void DrawParticles();
 void RenderFunction(void);
 
 
@@ -153,7 +154,7 @@ void Draw(void)
     ModelViewMatrixStack.pop();
 */
 
-    DrawParticles();
+    particles.draw();
 
     glUseProgram(0);
 }
@@ -286,77 +287,6 @@ void LoadModel(void)
     glBindVertexArray(0);
 }
 
-void PrepareParticles()
-{
-    particles = new std::vector< gloost::Point3 >();
-
-    particles->push_back(gloost::Point3( 0.0f, 1.0f, 0.0f));
-    particles->push_back(gloost::Point3( 1.0f, 0.0f, 0.0f));
-    particles->push_back(gloost::Point3(-1.0f, 0.0f, 0.0f));
-
-    std::cout << sizeof(gloost::Point3) << "; " << 4 * sizeof(float) << std::endl;
-
-    // unsigned index[] = {0, 1, 2}; // only needed for glDrawElements
-
-    // create VAO which holds the state of our Vertex Attributes and VertexBufferObjects - a control structure
-    // note: for different objects more of these are needed
-    glGenVertexArrays(1, &BufferIds[3]);
-
-    // bind Vertex Array - Scope begins
-    glBindVertexArray(BufferIds[3]);
-
-    // Create a VertexBufferObject and bind it to set its data
-    glGenBuffers(2, &BufferIds[4]);
-    glBindBuffer(GL_ARRAY_BUFFER, BufferIds[4]);
-
-    // set the vertex data for the actual buffer; the second parameter is the size in bytes of all Vertices together
-    // the third parameter is a pointer to the vertexdata
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(gloost::Point3) * particles->size(),
-                 &((*particles)[0]),
-                 GL_STATIC_DRAW);
-
-    // enables a VertexAttributeArray
-    glEnableVertexAttribArray(0);
-
-    // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
-    glVertexAttribPointer(0,
-                          4,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          0,
-                          0);
-
-/*  TODO: only needed for glDrawElements
-
-    // the second VertexBufferObject ist bound
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[5]);
-
-    // its data are the indices of the vertices
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned) * 3,
-                 &(index[0]),
-                 GL_STATIC_DRAW);
-
-*/
-
-    // unbind the VertexArray - Scope ends
-    glBindVertexArray(0);
-}
-
-void DrawParticles()
-{
-    // glUseProgram(ShaderIds[0]);
-
-    // bind the Geometry
-    glBindVertexArray(BufferIds[3]);
-
-    // draw Geometry
-    // glDrawElements(GL_TRIANGLES, particles->size(), GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    // glUseProgram(0);
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -592,5 +522,5 @@ void Initialize(int argc, char* argv[])
 
     SetupShader();
     LoadModel();
-    PrepareParticles();
+    particles.prepare();
 }
