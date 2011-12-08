@@ -25,7 +25,7 @@
 #include <Mesh.h>
 gloost::Mesh* mesh = 0;
 
-Particles particles;
+Particles particles(100);
 
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
@@ -153,7 +153,7 @@ void Draw(void)
     }
     ModelViewMatrixStack.pop();
 */
-
+    particles.manipulate();
     particles.draw();
 
     glUseProgram(0);

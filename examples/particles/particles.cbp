@@ -54,6 +54,8 @@
 		<Unit filename="../../data/shaders/simpleFragmentShader.frag" />
 		<Unit filename="../../data/shaders/simpleVertexShader.vert" />
 		<Unit filename="main.cpp" />
+		<Unit filename="../../src/Particles.cpp" />
+		<Unit filename="../../src/Particles.h" />
 		<Unit filename="../../src/Shader.cpp" />
 		<Unit filename="../../src/Shader.h" />
 		<Extensions>

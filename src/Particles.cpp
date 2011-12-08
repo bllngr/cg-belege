@@ -1,8 +1,12 @@
 #include "Particles.h"
 
-Particles::Particles()
+#include <gloostMath.h>
+
+Particles::Particles(int quantity)
 {
-    //ctor
+    _quantity = quantity;
+    _prt.resize(_quantity);
+    std::fill(_prt.begin(), _prt.end(), Particle());
 }
 
 Particles::~Particles()
@@ -18,8 +22,8 @@ void Particles::draw() const
     glBindVertexArray(BufferIds[3]);
 
     // draw Geometry
-    // glDrawElements(GL_TRIANGLES, _data.size(), GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glPointSize(4);
+    glDrawArrays(GL_POINTS, 0, _quantity);
 
     // glUseProgram(0);
 
@@ -27,14 +31,15 @@ void Particles::draw() const
 
 void Particles::prepare()
 {
-    _data.push_back(gloost::Point3( 0.0f, 1.0f, 0.0f));
-    _data.push_back(gloost::Point3( 1.0f, 0.0f, 0.0f));
-    _data.push_back(gloost::Point3(-1.0f, 0.0f, 0.0f));
 
-    // unsigned index[] = {0, 1, 2}; // only needed for glDrawElements
+     // TODO
+    for (Particle& p : _prt) { // C++11
+        p.direction[0] = gloost::crand()/10000;
+        p.direction[1] = gloost::crand()/10000;
+    }
 
-    // create VAO which holds the state of our Vertex Attributes and VertexBufferObjects - a control structure
-    // note: for different objects more of these are needed
+
+    // create VAO which holds the state of our Vertex Attributes and VertexBufferObjects
     glGenVertexArrays(1, &BufferIds[3]);
 
     // bind Vertex Array - Scope begins
@@ -44,11 +49,10 @@ void Particles::prepare()
     glGenBuffers(2, &BufferIds[4]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferIds[4]);
 
-    // set the vertex data for the actual buffer; the second parameter is the size in bytes of all Vertices together
-    // the third parameter is a pointer to the vertexdata
+    // set the vertex data for the actual buffer
     glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(gloost::Point3) * _data.size(),
-                 &(_data[0]),
+                 sizeof(gloost::Point3) * _quantity,
+                 &(_data[0]), // TODO
                  GL_STATIC_DRAW);
 
     // enables a VertexAttributeArray
@@ -62,20 +66,27 @@ void Particles::prepare()
                           0,
                           0);
 
-/*  TODO: only needed for glDrawElements
-
-    // the second VertexBufferObject ist bound
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[5]);
-
-    // its data are the indices of the vertices
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned) * 3,
-                 &(index[0]),
-                 GL_STATIC_DRAW);
-
-*/
-
     // unbind the VertexArray - Scope ends
     glBindVertexArray(0);
+
+}
+
+void Particles::manipulate()
+{
+
+    _data.clear(); // TODO: don't clear, use index operator to change values instead
+
+    for (Particle& p : _prt) { // C++11
+        if (p.isActive) {
+            gloost::Vector3 translation(p.direction[0], p.direction[1], p.direction[2]);
+            p.position += translation;
+            _data.push_back(p.position);
+        }
+    }
+
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    0,                                  // from start
+                    sizeof(gloost::Point3) * _quantity, // to end
+                    &(_data[0])); // TODO
 
 }
