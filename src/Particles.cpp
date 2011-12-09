@@ -71,16 +71,21 @@ void Particles::prepare()
 
 }
 
-void Particles::manipulate()
+void Particles::update()
 {
 
     _data.clear(); // TODO: don't clear, use index operator to change values instead
 
     for (Particle& p : _prt) { // C++11
+        if (p.lifetime <= 0.0f) p.isActive = false;
+
         if (p.isActive) {
             gloost::Vector3 translation(p.direction[0], p.direction[1], p.direction[2]);
             p.position += translation;
+            p.lifetime -= p.fade;
             _data.push_back(p.position);
+        } else {
+            p.reset();
         }
     }
 

@@ -153,7 +153,7 @@ void Draw(void)
     }
     ModelViewMatrixStack.pop();
 */
-    particles.manipulate();
+    particles.update();
     particles.draw();
 
     glUseProgram(0);

@@ -10,6 +10,38 @@
 
 extern unsigned BufferIds[6]; // globally defined in main.cpp
 
+struct Particle {
+    Particle() :
+        position (gloost::Point3(0.0f, 0.0f, 0.0f)),
+        isActive(true),
+        lifetime(gloost::frand()),
+        direction({0, 0, 0}),
+        decelaration({0, 0, 0}),
+        fade(gloost::getRandomMinMax(0.0f, 99.0f)/1000.0f + 0.003f)
+    {}
+
+    void reset()
+    {
+        position  = gloost::Point3(0.0f, 0.0f, 0.0f);
+        isActive  = true;
+        lifetime  = gloost::frand();
+        direction[0] = gloost::crand()/10000;;
+        direction[1] = gloost::crand()/10000;;
+        direction[2] = 0;
+        decelaration[0] = 0;
+        decelaration[1] = 0;
+        decelaration[2] = 0;
+        fade = gloost::getRandomMinMax(0.0f, 99.0f)/100000.0f + 0.00003f;
+    }
+
+    gloost::Point3 position;
+    bool isActive;
+    float lifetime;
+    float direction[3];
+    float decelaration[3];
+    float fade;
+};
+
 class Particles
 {
 public:
@@ -18,29 +50,12 @@ public:
 
     void draw() const;
     void prepare();
-    void manipulate();
+    void update();
+    std::vector< Particle > const& getParticles();
 
 private:
 
     int _quantity;
-    struct Particle {
-        Particle() :
-            position (gloost::Point3(0.0f, 0.0f, 0.0f)),
-            isActive(true),
-            lifetime(0),
-            direction({0, 0, 0}),
-            decelaration({0, 0, 0}),
-            fade(gloost::getRandomMinMax(0.0f, 99.0f)/1000.0f + 0.003f)
-        {}
-
-        gloost::Point3 position;
-        bool isActive;
-        float lifetime;
-        float direction[3];
-        float decelaration[3];
-        float fade;
-    };
-
     std::vector < gloost::Point3 > _data; // TODO
     std::vector < Particle > _prt;        // TODO
 };
