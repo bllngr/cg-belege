@@ -25,7 +25,7 @@
 #include <Mesh.h>
 gloost::Mesh* mesh = 0;
 
-Particles particles(100);
+Particles particles(1000);
 
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>

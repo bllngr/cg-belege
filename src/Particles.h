@@ -56,8 +56,7 @@ public:
 private:
 
     int _quantity;
-    std::vector < gloost::Point3 > _data; // TODO
-    std::vector < Particle > _prt;        // TODO
+    std::vector < Particle > _data;
 };
 
 #endif // __PARTICLES_H

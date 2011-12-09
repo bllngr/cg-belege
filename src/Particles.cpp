@@ -5,8 +5,8 @@
 Particles::Particles(int quantity)
 {
     _quantity = quantity;
-    _prt.resize(_quantity);
-    std::fill(_prt.begin(), _prt.end(), Particle());
+    _data.resize(_quantity);
+    std::fill(_data.begin(), _data.end(), Particle());
 }
 
 Particles::~Particles()
@@ -33,7 +33,7 @@ void Particles::prepare()
 {
 
      // TODO
-    for (Particle& p : _prt) { // C++11
+    for (Particle& p : _data) { // C++11
         p.direction[0] = gloost::crand()/10000;
         p.direction[1] = gloost::crand()/10000;
     }
@@ -52,7 +52,7 @@ void Particles::prepare()
     // set the vertex data for the actual buffer
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(gloost::Point3) * _quantity,
-                 &(_data[0]), // TODO
+                 &(_data.front()),
                  GL_STATIC_DRAW);
 
     // enables a VertexAttributeArray
@@ -60,10 +60,10 @@ void Particles::prepare()
 
     // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
     glVertexAttribPointer(0,
-                          4,
+                          3,
                           GL_FLOAT,
                           GL_FALSE,
-                          0,
+                          sizeof(Particle),
                           0);
 
     // unbind the VertexArray - Scope ends
@@ -74,16 +74,13 @@ void Particles::prepare()
 void Particles::update()
 {
 
-    _data.clear(); // TODO: don't clear, use index operator to change values instead
-
-    for (Particle& p : _prt) { // C++11
+    for (Particle& p : _data) { // C++11
         if (p.lifetime <= 0.0f) p.isActive = false;
 
         if (p.isActive) {
             gloost::Vector3 translation(p.direction[0], p.direction[1], p.direction[2]);
             p.position += translation;
             p.lifetime -= p.fade;
-            _data.push_back(p.position);
         } else {
             p.reset();
         }
@@ -92,6 +89,6 @@ void Particles::update()
     glBufferSubData(GL_ARRAY_BUFFER,
                     0,                                  // from start
                     sizeof(gloost::Point3) * _quantity, // to end
-                    &(_data[0])); // TODO
+                    &(_data.front()));
 
 }
