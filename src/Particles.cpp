@@ -22,7 +22,7 @@ void Particles::draw() const
     glBindVertexArray(BufferIds[3]);
 
     // draw Geometry
-    glPointSize(4);
+    // glPointSize(4);
     glDrawArrays(GL_POINTS, 0, _quantity);
 
     // glUseProgram(0);

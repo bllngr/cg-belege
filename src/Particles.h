@@ -25,13 +25,13 @@ struct Particle {
         position  = gloost::Point3(0.0f, 0.0f, 0.0f);
         isActive  = true;
         lifetime  = gloost::frand();
-        direction[0] = gloost::crand()/10000;;
-        direction[1] = gloost::crand()/10000;;
+        direction[0] = (gloost::frand() - 1)/10000;
+        direction[1] = gloost::crand()/100000;
         direction[2] = 0;
         decelaration[0] = 0;
         decelaration[1] = 0;
         decelaration[2] = 0;
-        fade = gloost::getRandomMinMax(0.0f, 99.0f)/100000.0f + 0.00003f;
+        fade = gloost::getRandomMinMax(3.0f, 99.0f)/50000.0f;
     }
 
     gloost::Point3 position;
