@@ -51,7 +51,7 @@ void Particles::prepare()
 
     // set the vertex data for the actual buffer
     glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(gloost::Point3) * _quantity,
+                 sizeof(Particle) * _quantity,
                  &(_data.front()),
                  GL_STATIC_DRAW);
 
