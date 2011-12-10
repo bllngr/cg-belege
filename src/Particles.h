@@ -51,10 +51,10 @@ public:
     Particles(int quantity);
     ~Particles();
 
-    void draw() const;
-    void prepare();
+    // void draw() const;
+    // void prepare();
     void update();
-    std::vector< Particle > const& getParticles();
+    std::vector< Particle > const& getParticles() const;
 
 private:
 

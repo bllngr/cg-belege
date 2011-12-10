@@ -150,11 +150,33 @@ void Draw(void)
         // draw Geometry
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size() * 3, GL_UNSIGNED_INT, 0);
 
+*/
+
+        ////////////////////////////////////////////////////////////////////////
+        //                                                                    //
+        // draw the particles                                                 //
+        //                                                                    //
+        ////////////////////////////////////////////////////////////////////////
+
+        // bind the Geometry
+        glBindVertexArray(BufferIds[3]);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_DEPTH_TEST);
+
+        // draw Geometry
+        // glPointSize(4);
+        glDrawArrays(GL_POINTS, 0, particles.getParticles().size());
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+
+/*
     }
     ModelViewMatrixStack.pop();
 */
     particles.update();
-    particles.draw();
 
     glUseProgram(0);
 }
@@ -282,6 +304,50 @@ void LoadModel(void)
                  sizeof(gloost::TriangleFace) * mesh->getTriangles().size(),
                  &mesh->getTriangles().front(),
                  GL_STATIC_DRAW);
+
+    ////////////////////////////////////////////////////////////////////////////
+    //                                                                        //
+    // prepare the buffers for the particles                                  //
+    //                                                                        //
+    ////////////////////////////////////////////////////////////////////////////
+
+    // create VAO which holds the state of our Vertex Attributes and VertexBufferObjects
+    glGenVertexArrays(1, &BufferIds[3]);
+
+    // bind Vertex Array - Scope begins
+    glBindVertexArray(BufferIds[3]);
+
+    // Create a VertexBufferObject and bind it to set its data
+    glGenBuffers(2, &BufferIds[4]);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferIds[4]);
+
+    // set the vertex data for the actual buffer
+    glBufferData(GL_ARRAY_BUFFER,
+                 sizeof(Particle) * particles.getParticles().size(),
+                 &(particles.getParticles().front()),
+                 GL_STATIC_DRAW);
+
+    // enables a VertexAttributeArray for the vertices
+    glEnableVertexAttribArray(0);
+
+    // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
+    glVertexAttribPointer(0,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(Particle),
+                          0);
+
+    // enables a VertexAttributeArray for the colors
+    glEnableVertexAttribArray(2);
+
+    // specifies where in the GL_ARRAY_BUFFER our data (the colors) is exactly
+    glVertexAttribPointer(2,
+                          4,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(Particle),
+                          (GLvoid*) sizeof(gloost::Point3));
 
     // unbind the VertexArray - Scope ends
     glBindVertexArray(0);
@@ -522,5 +588,4 @@ void Initialize(int argc, char* argv[])
 
     SetupShader();
     LoadModel();
-    particles.prepare();
 }
