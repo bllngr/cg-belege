@@ -12,7 +12,7 @@ extern unsigned BufferIds[6]; // globally defined in main.cpp
 
 struct Particle {
     Particle() :
-        position(gloost::Point3(0.0f, 0.0f, 0.0f)),
+        position(0.0f, 0.0f, 0.0f),
         color(1.0f, 0.0f, 0.0f, 1.0f),
         isActive(true),
         lifetime(gloost::frand()),
