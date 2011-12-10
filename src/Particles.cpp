@@ -55,7 +55,7 @@ void Particles::prepare()
                  &(_data.front()),
                  GL_STATIC_DRAW);
 
-    // enables a VertexAttributeArray
+    // enables a VertexAttributeArray for the vertices
     glEnableVertexAttribArray(0);
 
     // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
@@ -65,6 +65,17 @@ void Particles::prepare()
                           GL_FALSE,
                           sizeof(Particle),
                           0);
+
+    // enables a VertexAttributeArray for the colors
+    glEnableVertexAttribArray(1);
+
+    // specifies where in the GL_ARRAY_BUFFER our data (the colors) is exactly
+    glVertexAttribPointer(1,
+                          4,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(Particle),
+                          (GLvoid*) sizeof(gloost::Point3));
 
     // unbind the VertexArray - Scope ends
     glBindVertexArray(0);
