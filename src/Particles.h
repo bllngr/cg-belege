@@ -13,7 +13,7 @@ extern unsigned BufferIds[6]; // globally defined in main.cpp
 struct Particle {
     Particle() :
         position(0.0f, 0.0f, 0.0f),
-        color(1.0f, 0.0f, 0.0f, 1.0f),
+        color(0.7176f, 0.870f, 0.99f, 1.0f),
         isActive(true),
         lifetime(gloost::frand()),
         direction({0, 0, 0}),
@@ -24,7 +24,7 @@ struct Particle {
     void reset()
     {
         position  = gloost::Point3(0.0f, 0.0f, 0.0f);
-        color     = gloost::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        color     = gloost::vec4(0.7176f, 0.870f, 0.99f, 1.0f),
         isActive  = true;
         lifetime  = gloost::frand();
         direction[0] = (gloost::frand() - 1)/10000;

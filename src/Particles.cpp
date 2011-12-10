@@ -21,9 +21,16 @@ void Particles::draw() const
     // bind the Geometry
     glBindVertexArray(BufferIds[3]);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+
     // draw Geometry
     // glPointSize(4);
     glDrawArrays(GL_POINTS, 0, _quantity);
+
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 
     // glUseProgram(0);
 
@@ -92,6 +99,7 @@ void Particles::update()
             gloost::Vector3 translation(p.direction[0], p.direction[1], p.direction[2]);
             p.position += translation;
             p.lifetime -= p.fade;
+            p.color.a  -= p.fade;
         } else {
             p.reset();
         }

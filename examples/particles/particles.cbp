@@ -51,8 +51,8 @@
 			<Add directory="../../contrib/gloostmath/bin" />
 			<Add directory="../../lib" />
 		</Linker>
-		<Unit filename="../../data/shaders/simpleFragmentShader.frag" />
-		<Unit filename="../../data/shaders/simpleVertexShader.vert" />
+		<Unit filename="../../data/shaders/simpleParticleShader.frag" />
+		<Unit filename="../../data/shaders/simpleParticleShader.vert" />
 		<Unit filename="main.cpp" />
 		<Unit filename="../../src/Particles.cpp" />
 		<Unit filename="../../src/Particles.h" />
