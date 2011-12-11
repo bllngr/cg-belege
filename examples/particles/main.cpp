@@ -121,7 +121,6 @@ void Draw(void)
 
     timeBefore = timeNow;
 
-
     //////////////////////////////////////////////////////////////////////////
 
     glUseProgram(ShaderIds[0]);
@@ -132,6 +131,7 @@ void Draw(void)
 
     ModelViewMatrixStack.translate(cameraTranslation);
     ModelViewMatrixStack.rotate(cameraRotation);
+
     ModelViewMatrixStack.top().invert();
 
     gloost::Matrix normalMatrix;
@@ -267,7 +267,6 @@ void SetupShader()
 
 void LoadModel(std::string const& objFile)
 {
-
     // load a wavefront *.obj file
     gloost::ObjLoader loader(objFile);
 
@@ -319,10 +318,11 @@ void LoadModel(std::string const& objFile)
     // enables a VertexAttributeArray
     glEnableVertexAttribArray(1);
 
-    // specifies where in the GL_ARRAY_BUFFER our data (the vertex position) is exactly
+    // specifies where in the GL_ARRAY_BUFFER our data (the normal vectors) is exactly
     glVertexAttribPointer(1,
                           GLOOST_MESH_NUM_COMPONENTS_NORMAL,
-                          GL_FLOAT, GL_FALSE,
+                          GL_FLOAT,
+                          GL_FALSE,
                           mesh->getInterleavedInfo().interleavedPackageStride,
                           (GLvoid*)(mesh->getInterleavedInfo().interleavedNormalStride));
 
