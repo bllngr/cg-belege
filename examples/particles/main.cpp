@@ -14,7 +14,6 @@
  */
 
 /* TODO:
- * Shader wechseln
  * Keyboard/Maus einfügen
  * Komet korrigieren
  * neue Keyboard-Interaktionen hinzufügen
@@ -51,11 +50,11 @@ gloost::Vector3 cameraRotation(0.0f, 0.0f, 0.0f);
 
 unsigned FrameCount = 0;
 
-unsigned ModelViewMatrixUniformLocation  = 0;
-unsigned ProjectionMatrixUniformLocation = 0;
-unsigned NormalMatrixUniformLocation     = 0;
-unsigned ObjectColorUniformLocation      = 0;
-unsigned SamplerUniformLocation          = 0;
+unsigned ModelViewMatrixUniformLocation[2]  = { 0u };
+unsigned ProjectionMatrixUniformLocation[2] = { 0u };
+unsigned NormalMatrixUniformLocation[2]     = { 0u };
+unsigned ObjectColorUniformLocation[2]      = { 0u };
+unsigned SamplerUniformLocation[2]          = { 0u };
 
 unsigned BufferIds[6] = { 0u };
 unsigned ShaderIds[6] = { 0u };
@@ -200,7 +199,7 @@ void Draw(void)
         glUseProgram(ShaderIds[3]);
 
         // transfer ModelViewMatrix for Geometry 1 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation[1], 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
         // bind the Geometry
         glBindVertexArray(BufferIds[3]);
@@ -294,15 +293,15 @@ void DrawOrb(int TextureId)
     gloost::Matrix normalMatrix;
 
     // transfer ModelViewMatrix to Shaders
-    glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+    glUniformMatrix4fv(ModelViewMatrixUniformLocation[0], 1, GL_FALSE, ModelViewMatrixStack.top().data());
 
     // bind Texture and transfer to shader
     // glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, TextureIds[TextureId]);
-    glUniform1i(SamplerUniformLocation, GL_TEXTURE0 + TextureId);
+    glUniform1i(SamplerUniformLocation[0], GL_TEXTURE0 + TextureId);
 
     // transfer object color vector to Shaders
-    // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
+    // glUniform4f(ObjectColorUniformLocation[0], 1.0f, 1.0f, 0.0f, 1.0f); // yellow
 
     // set the NormalMatrix
     normalMatrix = ModelViewMatrixStack.top();
@@ -310,7 +309,7 @@ void DrawOrb(int TextureId)
     normalMatrix.transpose();
 
     // transfer NormalMatrix for to Shaders
-    glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+    glUniformMatrix4fv(NormalMatrixUniformLocation[0], 1, GL_FALSE, normalMatrix.data());
 
     // bind the Geometry
     glBindVertexArray(BufferIds[0]);
@@ -353,8 +352,8 @@ void SetupShader()
     ShaderIds[0] = glCreateProgram();
     {
         // takes a (shader) filename and a shader-type and returns and id of the compiled shader
-        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleVertexShader.vert", GL_VERTEX_SHADER);
-        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleFragmentShader.frag", GL_FRAGMENT_SHADER);
+        ShaderIds[1] = Shader::loadShader("../data/shaders/blinnPhongShading.vert", GL_VERTEX_SHADER);
+        ShaderIds[2] = Shader::loadShader("../data/shaders/blinnPhongShading.frag", GL_FRAGMENT_SHADER);
 
         // attaches a shader to a program
         glAttachShader(ShaderIds[0], ShaderIds[1]);
@@ -376,11 +375,27 @@ void SetupShader()
     glLinkProgram(ShaderIds[3]);
 
     // describes how the uniforms in the shaders are named and to which shader they belong
-    ModelViewMatrixUniformLocation  = glGetUniformLocation(ShaderIds[0], "ModelViewMatrix");
-    ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
-    NormalMatrixUniformLocation     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
-    ObjectColorUniformLocation      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
-    SamplerUniformLocation          = glGetUniformLocation(ShaderIds[0], "ObjectSampler");
+    ModelViewMatrixUniformLocation[0]  = glGetUniformLocation(ShaderIds[0], "ModelViewMatrix");
+    ProjectionMatrixUniformLocation[0] = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
+    NormalMatrixUniformLocation[0]     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
+    ObjectColorUniformLocation[0]      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
+    SamplerUniformLocation[0]          = glGetUniformLocation(ShaderIds[0], "ObjectSampler");
+
+    ModelViewMatrixUniformLocation[1]  = glGetUniformLocation(ShaderIds[3], "ModelViewMatrix");
+    ProjectionMatrixUniformLocation[1] = glGetUniformLocation(ShaderIds[3], "ProjectionMatrix");
+    NormalMatrixUniformLocation[1]     = glGetUniformLocation(ShaderIds[3], "NormalMatrix");
+    ObjectColorUniformLocation[1]      = glGetUniformLocation(ShaderIds[3], "ObjectColor");
+    SamplerUniformLocation[1]          = glGetUniformLocation(ShaderIds[3], "ObjectSampler");
+
+/*
+ *     std::cout << ModelViewMatrixUniformLocation[0]  << " ?= " << ModelViewMatrixUniformLocation[1]  << std::endl;
+ *     std::cout << ProjectionMatrixUniformLocation[0] << " ?= " << ProjectionMatrixUniformLocation[1] << std::endl;
+ *     std::cout << NormalMatrixUniformLocation[0]     << " ?= " << NormalMatrixUniformLocation[1]     << std::endl;
+ *     std::cout << ObjectColorUniformLocation[0]      << " ?= " << ObjectColorUniformLocation[1]      << std::endl;
+ *     std::cout << SamplerUniformLocation[0]          << " ?= " << SamplerUniformLocation[1]          << std::endl;
+ *
+ */
+
 }
 
 
@@ -604,9 +619,9 @@ void ResizeFunction(int Width, int Height)
                              );
 
     glUseProgram(ShaderIds[0]);
-    glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, ProjectionMatrix.data());
+    glUniformMatrix4fv(ProjectionMatrixUniformLocation[0], 1, GL_FALSE, ProjectionMatrix.data());
     glUseProgram(ShaderIds[3]);
-    glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, ProjectionMatrix.data());
+    glUniformMatrix4fv(ProjectionMatrixUniformLocation[1], 1, GL_FALSE, ProjectionMatrix.data());
     glUseProgram(0);
 }
 
