@@ -13,6 +13,6 @@ uniform mat4 NormalMatrix;
 
 void main(void)
 {
-    gl_Position = /* (ProjectionMatrix * ModelViewMatrix) * */ vec4(in_Position, 1.0);
+    gl_Position = (ProjectionMatrix * ModelViewMatrix) * vec4(in_Position, 1.0);
     color  = in_Color;
 }

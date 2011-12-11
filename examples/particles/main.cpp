@@ -25,13 +25,10 @@
 #include <Mesh.h>
 gloost::Mesh* mesh = 0;
 
-Particles particles(1000);
+Particles particles(5000);
 
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
-
-#include <Particles.h>
-
 
 int CurrentWidth  = 800;
 int CurrentHeight = 600;
@@ -52,7 +49,7 @@ unsigned NormalMatrixUniformLocation     = 0;
 unsigned ObjectColorUniformLocation      = 0;
 
 unsigned BufferIds[6] = { 0u };
-unsigned ShaderIds[3] = { 0u };
+unsigned ShaderIds[6] = { 0u };
 
 float rotationOffset = 0.0f;
 
@@ -127,11 +124,12 @@ void Draw(void)
 
     gloost::Matrix normalMatrix;
 
-/*
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
-        ModelViewMatrixStack.translate(0, -3.0f, 0);
+        ModelViewMatrixStack.scale(0.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 1.5, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
 
         // transfer ModelViewMatrix for Geometry 1 to Shaders
         glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
@@ -150,7 +148,6 @@ void Draw(void)
         // draw Geometry
         glDrawElements(GL_TRIANGLES, mesh->getTriangles().size() * 3, GL_UNSIGNED_INT, 0);
 
-*/
 
         ////////////////////////////////////////////////////////////////////////
         //                                                                    //
@@ -158,25 +155,32 @@ void Draw(void)
         //                                                                    //
         ////////////////////////////////////////////////////////////////////////
 
+        // change to particle shader
+        glUseProgram(ShaderIds[3]);
+
+        // transfer ModelViewMatrix for Geometry 1 to Shaders
+        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
         // bind the Geometry
         glBindVertexArray(BufferIds[3]);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);
 
-        // draw Geometry
-        // glPointSize(4);
+        // draw particles
+        glPointSize(2);
         glDrawArrays(GL_POINTS, 0, particles.getParticles().size());
 
         glDisable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
 
-/*
+        particles.update();
+
+        // change back to "orb" shader
+        glUseProgram(ShaderIds[0]);
+
+
     }
     ModelViewMatrixStack.pop();
-*/
-    particles.update();
 
     glUseProgram(0);
 }
@@ -211,18 +215,31 @@ void RenderFunction(void)
 
 void SetupShader()
 {
-    // LOAD AND LINK SHADER
+    // LOAD AND LINK ORB SHADER
     ShaderIds[0] = glCreateProgram();
     {
         // takes a (shader) filename and a shader-type and returns and id of the compiled shader
-        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleParticleShader.vert", GL_VERTEX_SHADER);
-        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleParticleShader.frag", GL_FRAGMENT_SHADER);
+        ShaderIds[1] = Shader::loadShader("../data/shaders/simpleVertexShader.vert", GL_VERTEX_SHADER);
+        ShaderIds[2] = Shader::loadShader("../data/shaders/simpleFragmentShader.frag", GL_FRAGMENT_SHADER);
 
         // attaches a shader to a program
         glAttachShader(ShaderIds[0], ShaderIds[1]);
         glAttachShader(ShaderIds[0], ShaderIds[2]);
     }
     glLinkProgram(ShaderIds[0]);
+
+    // LOAD AND LINK PARTICLE SHADER
+    ShaderIds[3] = glCreateProgram();
+    {
+        // takes a (shader) filename and a shader-type and returns and id of the compiled shader
+        ShaderIds[4] = Shader::loadShader("../data/shaders/simpleParticleShader.vert", GL_VERTEX_SHADER);
+        ShaderIds[5] = Shader::loadShader("../data/shaders/simpleParticleShader.frag", GL_FRAGMENT_SHADER);
+
+        // attaches a shader to a program
+        glAttachShader(ShaderIds[3], ShaderIds[4]);
+        glAttachShader(ShaderIds[3], ShaderIds[5]);
+    }
+    glLinkProgram(ShaderIds[3]);
 
     // describes how the uniforms in the shaders are named and to which shader they belong
     ModelViewMatrixUniformLocation  = glGetUniformLocation(ShaderIds[0], "ModelViewMatrix");
@@ -396,6 +413,8 @@ void ResizeFunction(int Width, int Height)
                              );
 
     glUseProgram(ShaderIds[0]);
+    glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, ProjectionMatrix.data());
+    glUseProgram(ShaderIds[3]);
     glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, ProjectionMatrix.data());
     glUseProgram(0);
 }
@@ -588,4 +607,5 @@ void Initialize(int argc, char* argv[])
 
     SetupShader();
     LoadModel();
+    particles.reset();
 }

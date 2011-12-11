@@ -37,6 +37,13 @@ void Particles::update()
 
 }
 
+void Particles::reset()
+{
+    for (Particle& p : _data) { // C++11
+        p.reset();
+    }
+}
+
 std::vector< Particle > const& Particles::getParticles() const
 {
     return _data;

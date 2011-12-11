@@ -12,13 +12,13 @@ extern unsigned BufferIds[6]; // globally defined in main.cpp
 
 struct Particle {
     Particle() :
-        position(0.0f, 0.0f, 0.0f),
-        color(0.7176f, 0.870f, 0.99f, 1.0f),
-        isActive(true),
-        lifetime(gloost::frand()),
+        position(0, 0, 0),
+        color({0, 0, 0, 1}),
+        isActive(false),
+        lifetime(0),
         direction({0, 0, 0}),
         decelaration({0, 0, 0}),
-        fade(gloost::getRandomMinMax(0.0f, 99.0f)/1000.0f + 0.003f)
+        fade(0)
     {}
 
     void reset()
@@ -27,13 +27,13 @@ struct Particle {
         color     = gloost::vec4(0.7176f, 0.870f, 0.99f, 1.0f),
         isActive  = true;
         lifetime  = gloost::frand();
-        direction[0] = (gloost::frand() - 1)/10000;
-        direction[1] = gloost::crand()/100000;
-        direction[2] = 0;
+        direction[0] = (gloost::frand() - 1)/1000;
+        direction[1] = gloost::crand()/20000;
+        direction[2] = gloost::crand()/20000;
         decelaration[0] = 0;
         decelaration[1] = 0;
         decelaration[2] = 0;
-        fade = gloost::getRandomMinMax(3.0f, 10.0f)/5000.0f;
+        fade = gloost::getRandomMinMax(3.0f, 10.0f)/50000.0f;
     }
 
     gloost::Point3 position;
@@ -53,6 +53,7 @@ public:
 
     // void draw() const;
     // void prepare();
+    void reset();
     void update();
     std::vector< Particle > const& getParticles() const;
 
