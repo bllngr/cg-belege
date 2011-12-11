@@ -14,7 +14,8 @@
  */
 
 /* TODO:
- * Planeten einfuegen
+ * Texturen einfügen
+ * Planeten einfügen
  * Planet-Funktionen einfügen
  * Shader wechseln
  * Keyboard/Maus einfügen
