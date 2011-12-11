@@ -13,6 +13,15 @@
  *
  */
 
+/* TODO:
+ * Planeten einfuegen
+ * Planet-Funktionen einfügen
+ * Shader wechseln
+ * Keyboard/Maus einfügen
+ * Komet korrigieren
+ * neue Keyboard-Interaktionen hinzufügen
+ */
+
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
