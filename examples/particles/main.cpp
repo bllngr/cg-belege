@@ -28,6 +28,7 @@
 #include <GL/freeglut.h>
 #include <gloostMath.h>
 #include <gloostGlUtil.h>
+#include <FreeImage.h>
 #include <Shader.h>
 #include <Particles.h>
 
@@ -394,6 +395,8 @@ void Cleanup(void)
 
     glDeleteBuffers(2, &BufferIds[1]);
     glDeleteVertexArrays(1, &BufferIds[0]);
+
+    FreeImage_DeInitialise(); // not needed if linked dynamically
 }
 
 
@@ -616,6 +619,9 @@ void Initialize(int argc, char* argv[])
     ProjectionMatrix.setIdentity();
 
     SetupShader();
+
+    FreeImage_Initialise();
+
     LoadModel();
     particles.reset();
 }
