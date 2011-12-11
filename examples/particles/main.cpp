@@ -14,7 +14,6 @@
  */
 
 /* TODO:
- * Planeten einfügen
  * Shader wechseln
  * Keyboard/Maus einfügen
  * Komet korrigieren
@@ -137,12 +136,59 @@ void Draw(void)
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
+        // ModelViewMatrixStack.translate(1.0f, -2.0f, -8.0f);
+        ModelViewMatrixStack.scale(2.0f);
+
+        DrawOrb(0);
+
+    }
+    ModelViewMatrixStack.pop();
+
+    // save the current transformation onto the MatrixStack (first planet)
+    ModelViewMatrixStack.push();
+    {
         ModelViewMatrixStack.scale(0.25f);
         ModelViewMatrixStack.rotate(0.0f, rotation * 1.5, 0.0f);
         ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
 
-        DrawOrb(2);
 
+        DrawOrb(2);
+    }
+    ModelViewMatrixStack.pop(); // first planet
+
+    // save the current transformation onto the MatrixStack (second planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(0.4f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.25f, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 6.0f);
+
+        DrawOrb(1);
+
+    }
+    // don't pop it, since we want it to have a moon
+
+    // save the current transformation onto the MatrixStack (second planet's moon)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(0.25f);
+        ModelViewMatrixStack.rotate(rotation * 1.2f, 0.0f, 0.0f);
+        ModelViewMatrixStack.translate(0.0f, 0.0f, 3.0f);
+
+        DrawOrb(7);
+
+    }
+    ModelViewMatrixStack.pop(); // the moon
+    ModelViewMatrixStack.pop(); // and the second planet
+
+    // save the current transformation onto the MatrixStack (third planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.65f);
+        ModelViewMatrixStack.rotate(0.0f, rotation, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 5.0f);
+
+        DrawOrb(4);
 
         ////////////////////////////////////////////////////////////////////////
         //                                                                    //
@@ -173,9 +219,72 @@ void Draw(void)
         // change back to "orb" shader
         glUseProgram(ShaderIds[0]);
 
+    }
+    ModelViewMatrixStack.pop(); // third planet
+
+    // save the current transformation onto the MatrixStack (fourth planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.75f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.8f + 1, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 6.0f);
+
+        DrawOrb(3);
 
     }
-    ModelViewMatrixStack.pop();
+    ModelViewMatrixStack.pop(); // fourth planet
+
+    // save the current transformation onto the MatrixStack (fifth planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 2, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 22.0f);
+
+        DrawOrb(5);
+
+    }
+    ModelViewMatrixStack.pop(); // fifth planet
+
+    // save the current transformation onto the MatrixStack (sixths and last planet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.45f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 0.33 - 4, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 15.0f);
+
+        DrawOrb(6);
+
+    }
+
+    // two moons
+
+    // save the current transformation onto the MatrixStack (last planet's first moon)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 1.75, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 2.55f);
+
+        DrawOrb(7);
+
+    }
+    ModelViewMatrixStack.pop(); // last planet's first moon
+
+    // save the current transformation onto the MatrixStack (last planet's second moon)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.25f);
+        ModelViewMatrixStack.rotate(rotation * 1.75, 0.0f, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 3.5f);
+
+        DrawOrb(7);
+
+    }
+    ModelViewMatrixStack.pop(); // last planet's second moon
+
+    ModelViewMatrixStack.pop(); // last planet
+    ModelViewMatrixStack.pop(); // sun
 
     glUseProgram(0);
 }
