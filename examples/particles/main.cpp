@@ -86,7 +86,7 @@ void MouseFunction(int, int, int, int);
 void MotionFunction(int, int);
 void MoveCamera(CameraManipulation, float, float, float);
 void Cleanup(void);
-void LoadModel(void);
+void LoadModel(std::string const&);
 void SetupShader();
 void Draw(void);
 void RenderFunction(void);
@@ -263,11 +263,11 @@ void SetupShader()
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
-void LoadModel(void)
+void LoadModel(std::string const& objFile)
 {
 
     // load a wavefront *.obj file
-    gloost::ObjLoader loader("../data/objects/sphere.obj");
+    gloost::ObjLoader loader(objFile);
 
     mesh = loader.getMesh();
 
@@ -622,6 +622,6 @@ void Initialize(int argc, char* argv[])
 
     FreeImage_Initialise();
 
-    LoadModel();
+    LoadModel("../data/objects/sphere_malik.obj");
     particles.reset();
 }
