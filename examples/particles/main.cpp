@@ -54,8 +54,8 @@ gloost::Vector3 cameraRotation(0.0f, 0.0f, 0.0f);
 
 unsigned FrameCount = 0;
 
-unsigned ProjectionMatrixUniformLocation = 0;
 unsigned ModelViewMatrixUniformLocation  = 0;
+unsigned ProjectionMatrixUniformLocation = 0;
 unsigned NormalMatrixUniformLocation     = 0;
 unsigned ObjectColorUniformLocation      = 0;
 
