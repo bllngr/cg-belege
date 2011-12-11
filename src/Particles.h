@@ -33,7 +33,7 @@ struct Particle {
         decelaration[0] = 0;
         decelaration[1] = 0;
         decelaration[2] = 0;
-        fade = gloost::getRandomMinMax(3.0f, 99.0f)/50000.0f;
+        fade = gloost::getRandomMinMax(3.0f, 10.0f)/5000.0f;
     }
 
     gloost::Point3 position;
