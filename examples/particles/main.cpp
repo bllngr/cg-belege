@@ -134,8 +134,6 @@ void Draw(void)
 
     ModelViewMatrixStack.top().invert();
 
-    gloost::Matrix normalMatrix;
-
     // save the current transformation onto the MatrixStack (sun)
     ModelViewMatrixStack.push();
     {
@@ -143,22 +141,7 @@ void Draw(void)
         ModelViewMatrixStack.rotate(0.0f, rotation * 1.5, 0.0f);
         ModelViewMatrixStack.translate(0.0f, 0.0f, 7.0f);
 
-        // transfer ModelViewMatrix for Geometry 1 to Shaders
-        glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
-
-        // set the NormalMatrix
-        normalMatrix = ModelViewMatrixStack.top();
-        normalMatrix.invert();
-        normalMatrix.transpose();
-
-        // transfer NormalMatrix to Shaders
-        glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
-
-        // bind the Geometry
-        glBindVertexArray(BufferIds[0]);
-
-        // draw Geometry
-        glDrawElements(GL_TRIANGLES, mesh->getTriangles().size() * 3, GL_UNSIGNED_INT, 0);
+        DrawOrb(2);
 
 
         ////////////////////////////////////////////////////////////////////////
