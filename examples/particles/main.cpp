@@ -15,7 +15,6 @@
 
 /* TODO:
  * Planeten einfügen
- * Planet-Funktionen einfügen
  * Shader wechseln
  * Keyboard/Maus einfügen
  * Komet korrigieren
@@ -90,6 +89,7 @@ void Cleanup(void);
 void LoadModel(std::string const&);
 void SetupShader();
 void Draw(void);
+void DrawOrb(int);
 void RenderFunction(void);
 
 
@@ -195,6 +195,36 @@ void Draw(void)
     ModelViewMatrixStack.pop();
 
     glUseProgram(0);
+}
+
+void DrawOrb(int TextureId)
+{
+    gloost::Matrix normalMatrix;
+
+    // transfer ModelViewMatrix to Shaders
+    glUniformMatrix4fv(ModelViewMatrixUniformLocation, 1, GL_FALSE, ModelViewMatrixStack.top().data());
+
+    // bind Texture and transfer to shader
+    // glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, TextureIds[TextureId]);
+    glUniform1i(SamplerUniformLocation, GL_TEXTURE0 + TextureId);
+
+    // transfer object color vector to Shaders
+    // glUniform4f(ObjectColorUniformLocation, 1.0f, 1.0f, 0.0f, 1.0f); // yellow
+
+    // set the NormalMatrix
+    normalMatrix = ModelViewMatrixStack.top();
+    normalMatrix.invert();
+    normalMatrix.transpose();
+
+    // transfer NormalMatrix for to Shaders
+    glUniformMatrix4fv(NormalMatrixUniformLocation, 1, GL_FALSE, normalMatrix.data());
+
+    // bind the Geometry
+    glBindVertexArray(BufferIds[0]);
+
+    // draw Geometry 1
+    glDrawElements(GL_TRIANGLES, mesh->getTriangles().size()*3, GL_UNSIGNED_INT, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
