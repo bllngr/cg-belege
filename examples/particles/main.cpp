@@ -14,7 +14,6 @@
  */
 
 /* TODO:
- * Texturen einfügen
  * Planeten einfügen
  * Planet-Funktionen einfügen
  * Shader wechseln
@@ -58,9 +57,11 @@ unsigned ModelViewMatrixUniformLocation  = 0;
 unsigned ProjectionMatrixUniformLocation = 0;
 unsigned NormalMatrixUniformLocation     = 0;
 unsigned ObjectColorUniformLocation      = 0;
+unsigned SamplerUniformLocation          = 0;
 
 unsigned BufferIds[6] = { 0u };
 unsigned ShaderIds[6] = { 0u };
+unsigned TextureIds[9] = { 0u };
 
 float rotationOffset = 0.0f;
 
@@ -257,6 +258,7 @@ void SetupShader()
     ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
     NormalMatrixUniformLocation     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
     ObjectColorUniformLocation      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
+    SamplerUniformLocation          = glGetUniformLocation(ShaderIds[0], "ObjectSampler");
 }
 
 
@@ -324,6 +326,19 @@ void LoadModel(std::string const& objFile)
                           mesh->getInterleavedInfo().interleavedPackageStride,
                           (GLvoid*)(mesh->getInterleavedInfo().interleavedNormalStride));
 
+    // glBindBuffer(GL_TEXTURE_COORD_ARRAY, BufferIds[1]); // TODO
+
+    // enables a VertexAttributeArray
+    glEnableVertexAttribArray(2);
+
+    // specifies where in the GL_TEXTURE_COORD_ARRAY our data(the texture coordinates) is exactly
+    glVertexAttribPointer(2, // TODO
+                          GLOOST_MESH_NUM_COMPONENTS_TEXCOORD,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          mesh->getInterleavedInfo().interleavedPackageStride,
+                          (GLvoid*)(mesh->getInterleavedInfo().interleavedTexcoordStride));
+
     // the second VertexBufferObject ist bound
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
 
@@ -379,6 +394,47 @@ void LoadModel(std::string const& objFile)
 
     // unbind the VertexArray - Scope ends
     glBindVertexArray(0);
+}
+
+bool CreateTexture(unsigned textureIdIndex, std::string const& filename)
+{
+    FIBITMAP *bitmap    = FreeImage_Load(FreeImage_GetFileType(filename.c_str()), filename.c_str());
+    unsigned char *data = FreeImage_GetBits(bitmap);
+
+    // generate texture id
+    glGenTextures(1, &TextureIds[textureIdIndex]);
+
+    if (0 == TextureIds[textureIdIndex]) {
+        // OpenGL was not able to generate additional texture
+        return false;
+    }
+
+    // ??
+    glEnable(GL_TEXTURE_2D);
+
+    // bind texture object
+    glBindTexture(GL_TEXTURE_2D, TextureIds[textureIdIndex]);
+
+    // load image data
+    glTexImage2D(
+        GL_TEXTURE_2D, // target
+        0,      // level of detail
+        GL_RGB, // internal format
+        FreeImage_GetWidth(bitmap),
+        FreeImage_GetHeight(bitmap),
+        0,      // border width
+        GL_BGR, // format of the pixel data, FreeImage returns BGR values
+        GL_UNSIGNED_BYTE, // data type of the pixel data; unsigned char == unsigned byte
+        data    // FreeImage_GetBits();
+    );
+
+    // setting Texture Parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    return true;
 }
 
 
@@ -623,5 +679,15 @@ void Initialize(int argc, char* argv[])
     FreeImage_Initialise();
 
     LoadModel("../data/objects/sphere_malik.obj");
+
+    CreateTexture(0, "../data/textures/SunTexture_2048.png");
+    CreateTexture(1, "../data/textures/planet_texture_4_by_bbbeto-d3ccfuq.png");
+    CreateTexture(2, "../data/textures/Planet_Texture_2_by_SkillZombie.png");
+    CreateTexture(3, "../data/textures/Planet_Texture_02_by_Qzma.png");
+    CreateTexture(4, "../data/textures/SAN_2007___Mars_texture_002_by_Ayelie_stock.png");
+    CreateTexture(5, "../data/textures/neptune_texture_by_planetaryvisions.com.png");
+    CreateTexture(6, "../data/textures/mercure_texture_by_kilianhett.u.png");
+    CreateTexture(7, "../data/textures/moon_texture.png");
+
     particles.reset();
 }
