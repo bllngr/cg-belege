@@ -7,6 +7,7 @@ out vec4 color;
 
 // Matrix Uniforms as specified with glUniformMatrix4fv
 uniform mat4 ModelViewMatrix;
+uniform mat4 ModelMatrix;
 uniform mat4 ProjectionMatrix;
 uniform mat4 NormalMatrix;
 

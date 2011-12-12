@@ -49,6 +49,7 @@ gloost::Vector3 cameraRotation(0.0f, 0.0f, 0.0f);
 unsigned FrameCount = 0;
 
 unsigned ModelViewMatrixUniformLocation[2]  = { 0u };
+unsigned ModelMatrixUniformLocation[2]      = { 0u };
 unsigned ProjectionMatrixUniformLocation[2] = { 0u };
 unsigned NormalMatrixUniformLocation[2]     = { 0u };
 unsigned ObjectColorUniformLocation[2]      = { 0u };
@@ -385,12 +386,14 @@ void SetupShader()
 
     // describes how the uniforms in the shaders are named and to which shader they belong
     ModelViewMatrixUniformLocation[0]  = glGetUniformLocation(ShaderIds[0], "ModelViewMatrix");
+    ModelMatrixUniformLocation[0]      = glGetUniformLocation(ShaderIds[0], "ModelMatrix");
     ProjectionMatrixUniformLocation[0] = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
     NormalMatrixUniformLocation[0]     = glGetUniformLocation(ShaderIds[0], "NormalMatrix");
     ObjectColorUniformLocation[0]      = glGetUniformLocation(ShaderIds[0], "ObjectColor");
     SamplerUniformLocation[0]          = glGetUniformLocation(ShaderIds[0], "ObjectSampler");
 
     ModelViewMatrixUniformLocation[1]  = glGetUniformLocation(ShaderIds[3], "ModelViewMatrix");
+    ModelMatrixUniformLocation[1]      = glGetUniformLocation(ShaderIds[3], "ModelMatrix");
     ProjectionMatrixUniformLocation[1] = glGetUniformLocation(ShaderIds[3], "ProjectionMatrix");
     NormalMatrixUniformLocation[1]     = glGetUniformLocation(ShaderIds[3], "NormalMatrix");
     ObjectColorUniformLocation[1]      = glGetUniformLocation(ShaderIds[3], "ObjectColor");
@@ -398,6 +401,9 @@ void SetupShader()
 
 /*
  *     std::cout << ModelViewMatrixUniformLocation[0]  << " ?= " << ModelViewMatrixUniformLocation[1]  << std::endl;
+ */
+    std::cout << ModelMatrixUniformLocation[0]      << " ?= " << ModelMatrixUniformLocation[1]      << std::endl;
+/*
  *     std::cout << ProjectionMatrixUniformLocation[0] << " ?= " << ProjectionMatrixUniformLocation[1] << std::endl;
  *     std::cout << NormalMatrixUniformLocation[0]     << " ?= " << NormalMatrixUniformLocation[1]     << std::endl;
  *     std::cout << ObjectColorUniformLocation[0]      << " ?= " << ObjectColorUniformLocation[1]      << std::endl;
