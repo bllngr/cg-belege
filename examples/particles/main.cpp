@@ -187,6 +187,17 @@ void Draw(void)
         ModelViewMatrixStack.translate(0.0, 0.0, 5.0f);
 
         DrawOrb(4);
+    }
+    ModelViewMatrixStack.pop(); // third planet
+
+    // save the current transformation onto the MatrixStack (comet)
+    ModelViewMatrixStack.push();
+    {
+        ModelViewMatrixStack.scale(.15f);
+        ModelViewMatrixStack.rotate(0.0f, rotation * 2, 0.0f);
+        ModelViewMatrixStack.translate(0.0, 0.0, 45.0f);
+
+        DrawOrb(7);
 
         ////////////////////////////////////////////////////////////////////////
         //                                                                    //
@@ -218,7 +229,7 @@ void Draw(void)
         glUseProgram(ShaderIds[0]);
 
     }
-    ModelViewMatrixStack.pop(); // third planet
+    ModelViewMatrixStack.pop(); // comet
 
     // save the current transformation onto the MatrixStack (fourth planet)
     ModelViewMatrixStack.push();
