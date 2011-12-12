@@ -14,7 +14,6 @@
  */
 
 /* TODO:
- * Keyboard/Maus einfügen
  * Komet korrigieren
  * neue Keyboard-Interaktionen hinzufügen
  */
