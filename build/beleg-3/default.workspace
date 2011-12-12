@@ -2,7 +2,7 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
 		<Project filename="../../contrib/gloostmath/codeblocks/libgloostmath.cbp" />
-		<Project filename="particles.cbp" active="1">
+		<Project filename="beleg-3.cbp" active="1">
 			<Depends filename="../../contrib/gloostmath/codeblocks/libgloostmath.cbp" />
 		</Project>
 	</Workspace>
